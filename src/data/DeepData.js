@@ -48,4 +48,21 @@ module.exports = class DeepData {
     }
   }
 
+  /**
+   * @param {object} data
+   * @param {object} values
+   * @returns {object}
+   */
+  static mergeDeep(data, values) {
+    for (const key in values) {
+      if (typeof values[key] === 'object') {
+        data[key] = data[key] || {};
+        data[key] = DeepData.mergeDeep(data[key], values[key]);
+      } else {
+        data[key] = values[key];
+      }
+    }
+    return data;
+  }
+
 }
