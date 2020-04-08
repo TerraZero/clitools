@@ -1,6 +1,10 @@
-const Inquirer = require('inquirer');
+/**
+ * @typedef T_FormOptions
+ * @property {boolean} flatten
+ */
 
 const Field = require('./Field');
+const FieldCollection = require('./FieldCollection');
 const DeepData = require('../data/DeepData');
 const Converter = require('../data/Converter');
 
@@ -13,7 +17,7 @@ module.exports = class Form {
     this._fields = {};
     this._values = null;
     this._converter = null;
-    this._logger = parent.logger.create('form');
+    this._logger = parent.create('form');
     this._options = {
       flatten: false,
     };
@@ -21,7 +25,7 @@ module.exports = class Form {
   }
 
   /**
-   * @returns {import('../io/Logger')}
+   * @returns {import('../logging/Logger')}
    */
   get logger() {
     return this._logger;
@@ -39,7 +43,7 @@ module.exports = class Form {
   }
 
   /**
-   * @returns {Object<string, import('./Field')>}
+   * @returns {Object<string, import('./FieldLike')>}
    */
   get fields() {
     return this._fields;
@@ -50,6 +54,13 @@ module.exports = class Form {
    */
   get values() {
     return this._values;
+  }
+
+  /**
+   * @returns {T_FormOptions}
+   */
+  get options() {
+    return this._options;
   }
 
   /**
@@ -82,15 +93,26 @@ module.exports = class Form {
 
   /**
    * @param {string} name
+   * @param {string} type
    * @returns {import('./Field')}
    */
-  field(name) {
-    this._fields[name] = new Field(this, name);
+  field(name, type = null) {
+    this._fields[name] = new Field(this, name, type);
     return this._fields[name];
   }
 
   /**
-   * @returns {Promise<Object<string, string>>}
+   * @param {string} name
+   * @param {string} title
+   * @returns {import('./FieldCollection')}
+   */
+  collection(name, title = null) {
+    this._fields[name] = new FieldCollection(this, name);
+    return this._fields[name].title(title);
+  }
+
+  /**
+   * @returns {Promise<Object<string, (string|object)>>}
    */
   async execute() {
     if (this._values === null) {
@@ -105,19 +127,7 @@ module.exports = class Form {
   async doExecute() {
     this._values = {};
     for (const field in this.fields) {
-      const define = this.fields[field].define;
-
-      if (define.type === 'message') {
-        this.logger.log(define.message, define.placeholders);
-      } else {
-        const result = await Inquirer.prompt(define);
-
-        if (this._options.flatten) {
-          this._values[define.name] = Reflection.getDeep(result, define.name);
-        } else {
-          DeepData.setDeep(this._values, define.name, Reflection.getDeep(result, define.name));
-        }
-      }
+      await this.fields[field].execute(this._values);
     }
   }
 

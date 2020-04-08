@@ -4,32 +4,19 @@
  * @param {string} value
  */
 
-module.exports = class Field {
+const FieldLike = require('./FieldLike');
+
+module.exports = class Field extends FieldLike {
 
   /**
    * @param {import('./Form')} form
    * @param {string} name
    */
-  constructor(form, name) {
-    this._form = form;
-    this._define = { name };
+  constructor(form, name, type = null) {
+    super(form, name, type);
     this._validates = [];
     this._filters = [];
     this._fallback = null;
-  }
-
-  get define() {
-    if (typeof this._define.type !== 'string') {
-      throw new Error('The field ' + this._define.name + ' has no type.');
-    }
-    return this._define;
-  }
-
-  /**
-   * @returns {import('./Form')}
-   */
-  get form() {
-    return this._form;
   }
 
   /**
