@@ -2,6 +2,16 @@ const Colors = require('colors/safe');
 
 module.exports = class Logger {
 
+  static get CLI_WIDTH() {
+    if (process.stdout.getWindowSize) {
+      return process.stdout.getWindowSize()[0];
+    }
+    if (process.stdout.columns) {
+      return process.stdout.columns;
+    }
+    return null;
+  }
+
   static get LEVEL_ERROR() { return 2; }
   static get LEVEL_WARNING() { return 4; }
   static get LEVEL_LOG() { return 8; }
