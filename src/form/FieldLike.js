@@ -22,7 +22,7 @@
 
 const Inquirer = require('inquirer');
 
-const DeepData = require('../data/DeepData');
+const DeepData = require('utils/src/DeepData');
 
 module.exports = class FieldLike {
 

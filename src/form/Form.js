@@ -5,8 +5,8 @@
 
 const Field = require('./Field');
 const FieldCollection = require('./FieldCollection');
-const DeepData = require('../data/DeepData');
-const Converter = require('../data/Converter');
+const DeepData = require('utils/src/DeepData');
+const Converter = require('../logging/Converter');
 
 module.exports = class Form {
 
@@ -32,7 +32,7 @@ module.exports = class Form {
   }
 
   /**
-   * @returns {import('./Converter')}
+   * @returns {import('../logging/Converter')}
    */
   get converter() {
     if (this._converter === null) {

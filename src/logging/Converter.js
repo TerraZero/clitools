@@ -1,14 +1,14 @@
 module.exports = class Converter {
 
   /**
-   * @param {import('../logging/Logger')} parent
+   * @param {import('./Logger')} parent
    */
   constructor(parent) {
     this._logger = parent.create('input');
   }
 
   /**
-   * @returns {import('../logging/Logger')}
+   * @returns {import('./Logger')}
    */
   get logger() {
     return this._logger;
